@@ -61,34 +61,15 @@ if __name__ == '__main__':
     h = t + v
     # ハミルトニアン行列を対角化
     edvr, psi = la.eigh(h)
-    
+    # 厳密なエネルギーも計算し、これらを比較
     eexact = calcEnergies()
     print("Energies (DVR)")
     print(edvr)
-    print("Ladder spacing")
-    eold = edvr[0]
-    enew = 0.0
-    de = np.zeros([dim-1])
-    for i in range(dim):
-        if i == 0: continue
-        else:
-            de[i-1] = edvr[i]-eold
-            eold    = edvr[i]
-    print(de)
     print("Energies (Exact)")    
     print(eexact)
-    error = edvr-eexact
-    idx = -1
-    for i in range(error.shape[0]):
-        if abs(error[i]) >= 1.0e-10:
-            idx = i
-            break
-    print("Energies (Errors)")    
-    print(error)
-    print("Last index")
-    print(idx)
-    
-    numstates = 500
+
+    # 波動関数をcsv形式で保存
+    numstates = 50
     outfile   = open("wf.csv", "w")
 
     label = ["x"]
