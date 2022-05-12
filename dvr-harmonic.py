@@ -87,7 +87,7 @@ if __name__ == '__main__':
     v :np.ndarray = formPotential()
     # ハミルトニアン行列
     h :np.ndarray = t + v
-    # ハミルトニアン行列を対角化
+    # ハミルトニアン行列を対角化し、エネルギーと波動関数を計算
     edvr, psi = np.linalg.eigh(h)
     # 厳密なエネルギーも計算し、これらを比較
     eexact :np.ndarray = calcEnergies()
