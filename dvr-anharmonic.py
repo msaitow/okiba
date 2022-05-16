@@ -15,42 +15,36 @@ from functools import reduce
 # -:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|
 
 # 区間数
-dim    :int   = 5000
+dim    :int   = 1000
 # 積分範囲
 xinit  :float = -30.0
 xfinal :float =  30.0
 # 一区間の長さ
 dx :float = (xfinal-xinit)/dim
 
-# プランク定数
-hbar :float = 1.0
-# 質量
-m : float   = 1.0
-# 振動子の力定数
-k :float = 10.0
-# 振動子の振動数
-omega :np.ndarray = np.sqrt(k/m)
+# 摂動の強度
+a :float = 0.01
 
 # 運動エネルギー行列要素の計算
-# ==> Tij = <i|-hbar^2/2m d^2/dx^2|j>
+# ==> Tij = <i|-d^2/dx^2|j>
 def formKinetic() -> np.ndarray:
     k :np.ndarray = np.zeros([dim,dim])
     for i in range(dim):
         for j in range(i,dim):
-            fac :float = hbar**2 / (2*m) * (-1.0)**(i-j) / dx**2.0 
+            fac :float = (-1.0)**(i-j) / dx**2.0 
             if i==j: k[i,j] = fac * np.pi**2 / 3.0
             else:    k[i,j] = k[j,i] = fac * 2 / (i-j)**2
     return k
 
-# 調和振動子ポテンシャルエネルギー行列要素の計算
+# 振動子ポテンシャルエネルギー行列要素の計算
 # ==> Vij = <i|V(x)|j>
 def formPotential() -> np.ndarray:
     v :np.ndarray = np.zeros([dim,dim])
     for i in range(dim):
         x :float = xinit + i*dx
         # <i|V|j> = delta(ij) V(x_i)
-        #         = delta(ij) 1/2*k*x_i^2
-        v[i,i] = 0.5*k*x**2
+        #         = delta(ij) (x_i^2+a*x_i^4)
+        v[i,i] = x**2+a*x**4
     return v
 
 # DVR波動関数（psi）を新規ファイル（ファイル名:f_name）にcsv形式でnumstates状態だけ保存
@@ -69,22 +63,6 @@ def saveWFs(psi :np.ndarray, f_name :str, numstates :int) -> None:
         outfile.write(d_str+'\n')
     outfile.close()
     
-# 厳密な調和振動子のエネルギー（比較用）
-def calcEnergies() -> np.ndarray:
-    e :np.ndarray = np.zeros([dim])
-    for i in range(dim): e[i] = hbar*omega*(i+0.5)
-    return e
-
-# 厳密なエネルギーとDVR計算による近似値を比較し、何状態までであれば1e-10以下の桁数で厳密な値と一致するかを比較
-def compareEnergies(e1: np.ndarray, e2: np.ndarray) -> int:
-    error = e1-e2
-    idx = -1
-    for i in range(error.shape[0]):
-        if abs(error[i]) >= 1.0e-10:
-            idx = i
-            break
-    return idx
-
 # プログラム本体
 if __name__ == '__main__':
     tinit = tm.perf_counter()
@@ -95,13 +73,8 @@ if __name__ == '__main__':
     h :np.ndarray = t + v
     # ハミルトニアン行列を対角化し、エネルギーと波動関数を計算
     edvr, psi = np.linalg.eigh(h)
-    # 厳密なエネルギーも計算し、これらを比較
-    eexact :np.ndarray = calcEnergies()
     print("Energies (DVR)")
     print(edvr)
-    print("Energies (Exact)")    
-    print(eexact)
-    print("\n==|> The DVR energies match up to {0:d} states with the exact ones!".format(compareEnergies(edvr,eexact)) )
     # 50状態の波動関数をでcsvファイル（wf.csv）に保存
     saveWFs(psi,"wf.csv",50)
     tfinal = tm.perf_counter()
