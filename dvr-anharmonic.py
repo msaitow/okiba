@@ -23,7 +23,7 @@ xfinal :float =  30.0
 dx :float = (xfinal-xinit)/dim
 
 # 摂動の強度
-a :float = 0.01
+lambda_param :float = 0.01
 
 # 運動エネルギー行列要素の計算
 # ==> Tij = <i|-d^2/dx^2|j>
@@ -44,7 +44,7 @@ def formPotential() -> np.ndarray:
         x :float = xinit + i*dx
         # <i|V|j> = delta(ij) V(x_i)
         #         = delta(ij) (x_i^2+a*x_i^4)
-        v[i,i] = x**2+a*x**4
+        v[i,i] = x**2+lambda_param*x**4
     return v
 
 # DVR波動関数（psi）を新規ファイル（ファイル名:f_name）にcsv形式でnumstates状態だけ保存
