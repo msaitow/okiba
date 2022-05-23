@@ -23,7 +23,7 @@ xfinal :float =  30.0
 dx :float = (xfinal-xinit)/dim
 
 # 摂動の強度
-lambda_param :float = 0.01
+lambda_param :float = 2.5
 
 # 運動エネルギー行列要素の計算
 # ==> Tij = <i|-d^2/dx^2|j>

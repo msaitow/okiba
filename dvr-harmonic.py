@@ -15,10 +15,10 @@ from functools import reduce
 # -:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|-:|
 
 # 区間数
-dim    :int   = 5000
+dim    :int   = 200
 # 積分範囲
-xinit  :float = -30.0
-xfinal :float =  30.0
+xinit  :float = -10.0
+xfinal :float =  10.0
 # 一区間の長さ
 dx :float = (xfinal-xinit)/dim
 
